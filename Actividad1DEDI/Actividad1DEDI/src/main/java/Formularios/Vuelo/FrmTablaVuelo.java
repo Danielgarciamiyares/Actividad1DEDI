@@ -7,9 +7,25 @@ package Formularios.Vuelo;
 import Entidades.Aeropuerto;
 import LogicaNegocio.LogicaNegocio;
 import TableModels.VueloTableModel;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.KeyStroke;
 
 /**
  *
@@ -17,6 +33,10 @@ import java.util.logging.Logger;
  */
 public class FrmTablaVuelo extends javax.swing.JFrame {
 
+    JFXPanel jfxPanel;
+    JFrame frame;
+    
+    
     private static final FrmTablaVuelo INSTANCE=new FrmTablaVuelo();
     
     public static FrmTablaVuelo getInstance()
@@ -30,6 +50,7 @@ public class FrmTablaVuelo extends javax.swing.JFrame {
     public FrmTablaVuelo() {
         initComponents();
         cargarVuelos();
+        setHelp();
     }
 
     /**
@@ -54,6 +75,7 @@ public class FrmTablaVuelo extends javax.swing.JFrame {
         mnbuscarVueloDiaOpera = new javax.swing.JMenuItem();
         mnbuscarVueloOrigen = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        mnAyuda = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -124,6 +146,16 @@ public class FrmTablaVuelo extends javax.swing.JFrame {
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Ayuda");
+
+        mnAyuda.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
+        mnAyuda.setText("Ayuda general");
+        mnAyuda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnAyudaActionPerformed(evt);
+            }
+        });
+        jMenu2.add(mnAyuda);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -191,6 +223,11 @@ public class FrmTablaVuelo extends javax.swing.JFrame {
         tblVuelos.setModel(new VueloTableModel(LogicaNegocio.getVueloByOrigen(txtBusqueda.getText())));
     }//GEN-LAST:event_mnbuscarVueloOrigenActionPerformed
 
+    private void mnAyudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnAyudaActionPerformed
+        String url="https://daniel-garcia.gitbook.io/ayuda-tabla-vuelos/";
+        openWebView(url);
+    }//GEN-LAST:event_mnAyudaActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -233,6 +270,7 @@ public class FrmTablaVuelo extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenuItem mnAyuda;
     private javax.swing.JMenuItem mnbuscarVueloCodigo;
     private javax.swing.JMenuItem mnbuscarVueloDestino;
     private javax.swing.JMenuItem mnbuscarVueloDia;
@@ -250,6 +288,66 @@ private void cargarVuelos()
 {
     tblVuelos.setModel(new VueloTableModel(LogicaNegocio.todosLosVuelos()));
 } 
+
+
+
+
+
+/*Metod para la implementacion de ayuda*/
+private void setHelp() 
+{
+    /*Implementa la ayuda principal */
+    jfxPanel = new JFXPanel();
+    frame = new JFrame("Ayuda");
+    frame.setSize(new Dimension(500, 500));
+    frame.add(jfxPanel);
+    
+    Map<JComponent, String> contextualHelpMap = new HashMap<>();
+    contextualHelpMap.put(mnbuscarVueloCodigo, "https://app.gitbook.com/o/RhD4zGK8jzlmMlZ3zUII/s/waRY29tpwiLYQGMgklYa/ayuda-de-busqueda-de-vuelo-por-codigo");
+    contextualHelpMap.put(mnbuscarVueloDestino, "https://app.gitbook.com/o/RhD4zGK8jzlmMlZ3zUII/s/waRY29tpwiLYQGMgklYa/ayuda-de-busqueda-de-vuelo-por-destino");
+    contextualHelpMap.put(mnbuscarVueloDia, "https://app.gitbook.com/o/RhD4zGK8jzlmMlZ3zUII/s/waRY29tpwiLYQGMgklYa/ayuda-de-busqueda-de-vuelo-por-dia");
+    contextualHelpMap.put(mnbuscarVueloDiaOpera,"https://app.gitbook.com/o/RhD4zGK8jzlmMlZ3zUII/s/waRY29tpwiLYQGMgklYa/ayuda-de-busqueda-de-vuelo-por-dias-que-opera");
+    contextualHelpMap.put(mnbuscarVueloOrigen,"https://app.gitbook.com/o/RhD4zGK8jzlmMlZ3zUII/s/waRY29tpwiLYQGMgklYa/ayuda-de-busqueda-de-vuelo-por-origen");
+    // Se pueden agregar más elementos del mismo modo
+    setContextualHelp(contextualHelpMap);
+
+}
+
+
+private void openWebView(String url) 
+{
+    Platform.runLater(() -> 
+    {
+        WebView webView = new WebView();
+        WebEngine webEngine = webView.getEngine();
+        webEngine.load(url);
+        jfxPanel.setScene(new Scene(webView));
+        frame.setVisible(true);
+    });
+}
+
+private void setContextualHelp(Map<JComponent, String> map) 
+{
+    for (JComponent comp : map.keySet()) 
+    {
+        KeyStroke f1KeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0);
+        InputMap inputMap = comp.getInputMap(JComponent.WHEN_FOCUSED);
+        ActionMap actionMap = comp.getActionMap();
+        inputMap.put(f1KeyStroke, "showContextualHelp");
+        actionMap.put("showContextualHelp", new AbstractAction() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
+                String helpURL;
+                helpURL = map.get(comp);
+                openWebView(helpURL);
+            }
+        }
+        );
+    }
+}
+
 
 
 

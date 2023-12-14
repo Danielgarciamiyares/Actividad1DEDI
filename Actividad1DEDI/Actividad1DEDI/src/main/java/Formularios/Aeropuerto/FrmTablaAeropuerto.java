@@ -6,14 +6,34 @@ package Formularios.Aeropuerto;
 
 import LogicaNegocio.LogicaNegocio;
 import TableModels.AeropuertoTableModel;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.KeyStroke;
 
 /**
  *
  * @author Usuario
  */
 public class FrmTablaAeropuerto extends javax.swing.JFrame {
+    
+    JFXPanel jfxPanel;
+    JFrame frame;
+    
 
     private static final FrmTablaAeropuerto INSTANCE=new FrmTablaAeropuerto();
     
@@ -28,6 +48,8 @@ public class FrmTablaAeropuerto extends javax.swing.JFrame {
     public FrmTablaAeropuerto() {
         initComponents();
         cargarAeropuertos();
+        setHelp();
+        
     }
 
     /**
@@ -49,7 +71,8 @@ public class FrmTablaAeropuerto extends javax.swing.JFrame {
         mnbuscarAeroIATA = new javax.swing.JMenuItem();
         mnbuscarAeroMunicipio = new javax.swing.JMenuItem();
         mnbuscarAeroNombre = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        Jmenu2 = new javax.swing.JMenu();
+        mnAyuda = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -103,8 +126,19 @@ public class FrmTablaAeropuerto extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Ayuda");
-        jMenuBar1.add(jMenu2);
+        Jmenu2.setText("Ayuda");
+
+        mnAyuda.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F1, 0));
+        mnAyuda.setText("Ayuda general");
+        mnAyuda.setActionCommand("");
+        mnAyuda.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnAyudaActionPerformed(evt);
+            }
+        });
+        Jmenu2.add(mnAyuda);
+
+        jMenuBar1.add(Jmenu2);
 
         setJMenuBar(jMenuBar1);
 
@@ -162,6 +196,11 @@ public class FrmTablaAeropuerto extends javax.swing.JFrame {
         tblAeropuertos.setModel(new AeropuertoTableModel(valores));
     }//GEN-LAST:event_mnbuscarAeroNombreActionPerformed
 
+    private void mnAyudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnAyudaActionPerformed
+        String url="https://daniel-garcia.gitbook.io/ayuda-tabla-aeropuertos/";
+        openWebView(url);
+    }//GEN-LAST:event_mnAyudaActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -198,12 +237,13 @@ public class FrmTablaAeropuerto extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu Jmenu2;
     private javax.swing.JButton btnActualizar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenuItem mnAyuda;
     private javax.swing.JMenuItem mnbuscarAeroIATA;
     private javax.swing.JMenuItem mnbuscarAeroMunicipio;
     private javax.swing.JMenuItem mnbuscarAeroNombre;
@@ -214,6 +254,61 @@ public class FrmTablaAeropuerto extends javax.swing.JFrame {
 private void cargarAeropuertos()
 {
     tblAeropuertos.setModel(new AeropuertoTableModel(LogicaNegocio.todosLosAeropuertos()));
+}
+
+
+
+/*Metod para la implementacion de ayuda*/
+private void setHelp() 
+{
+    /*Implementa la ayuda principal */
+    jfxPanel = new JFXPanel();
+    frame = new JFrame("Ayuda");
+    frame.setSize(new Dimension(500, 500));
+    frame.add(jfxPanel);
+    
+    Map<JComponent, String> contextualHelpMap = new HashMap<>();
+    contextualHelpMap.put(mnbuscarAeroIATA, "https://app.gitbook.com/o/RhD4zGK8jzlmMlZ3zUII/s/hu6mwtmJCk7DPrhoOT4Q/ayuda-de-busqueda-de-aeropuerto-por-codigo-iata");
+    contextualHelpMap.put(mnbuscarAeroMunicipio, "https://app.gitbook.com/o/RhD4zGK8jzlmMlZ3zUII/s/hu6mwtmJCk7DPrhoOT4Q/ayuda-de-busqueda-de-aeropuerto-por-municipio");
+    contextualHelpMap.put(mnbuscarAeroNombre, "https://app.gitbook.com/o/RhD4zGK8jzlmMlZ3zUII/s/hu6mwtmJCk7DPrhoOT4Q/ayuda-de-busqueda-de-aeropuerto-por-nombre");
+    // Se pueden agregar más elementos del mismo modo
+    setContextualHelp(contextualHelpMap);
+
+}
+
+
+private void openWebView(String url) 
+{
+    Platform.runLater(() -> 
+    {
+        WebView webView = new WebView();
+        WebEngine webEngine = webView.getEngine();
+        webEngine.load(url);
+        jfxPanel.setScene(new Scene(webView));
+        frame.setVisible(true);
+    });
+}
+
+private void setContextualHelp(Map<JComponent, String> map) 
+{
+    for (JComponent comp : map.keySet()) 
+    {
+        KeyStroke f1KeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0);
+        InputMap inputMap = comp.getInputMap(JComponent.WHEN_FOCUSED);
+        ActionMap actionMap = comp.getActionMap();
+        inputMap.put(f1KeyStroke, "showContextualHelp");
+        actionMap.put("showContextualHelp", new AbstractAction() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
+                String helpURL;
+                helpURL = map.get(comp);
+                openWebView(helpURL);
+            }
+        }
+        );
+    }
 }
 
 

@@ -11,4 +11,29 @@
         <maven.compiler.target>20</maven.compiler.target>
         <exec.mainClass>es.dedi.actividad1.actividad1dedi.Actividad1DEDI</exec.mainClass>
     </properties>
+    
+    
+    
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>22-ea+16</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>17.0.7</version>
+            <type>jar</type>
+        </dependency>
+        
+        
+    </dependencies>
+    
+    
+    
+    
+    
 </project>
